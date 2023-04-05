@@ -8,7 +8,7 @@ s.startAliveThread( 0 );
 s.doWhenBooted({ "remote tcp server started".postln; s.notify; s.initTree });
 Server.default = s;
 )
-
+().play
 
 // Out Synths / Ndefs + proto Ndef für die g function
 (

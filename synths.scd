@@ -102,6 +102,40 @@ SynthDef(\pluck, { |freq = 440, in, out = 0, release = 1.0, amp = 1.0, dist = 10
 	Out.ar(out, snd * amp)
 
 }).add;
+
+
+SynthDef(\jride, { arg out=0, gate=1, amp=0.1, pan=0, freq=300, rel = 1, att = 0.01;
+	var sig;
+	sig = SinOsc.ar(freq * [0.5, 0.51, 1,1.01, 1.03]) * 20;
+	sig = Pan2.ar(sig, pan, amp);
+	sig = ( WhiteNoise.ar(0.3) + 0.1 ) * LFSaw.ar({ exprand(2500, 2600) }!10 * ( 1 + ( SinOsc.ar((1..4).rand(0.0)/18 * XLine.kr(1,21200,80)) * 1/41 * XLine.kr(1,0.1,60) )));
+	sig = BRF.ar(
+		sig,
+		{ ( exprand(9000,10000) * LFNoise1.ar(1/100.0.rand).range(1,2) ).clip(20,20000) }!10,
+		{ ( rand(0.1,0.2) * LFNoise1.ar(1/100).range(1,2) ).clip(0.01,0.3) }!10
+	);
+	sig = sig + BPF.ar(sig, freq * [1,1.01, 1.03] * [0.5, 1, 2, 2.01, 3, 3.01, 4, 4.01], 0.001, 50);
+	sig = LeakDC.ar(sig);
+	sig = LPF.ar(sig, 12000 * XLine.kr(1,1/100,4));
+	sig = sig * 5 * 3;
+	sig = sig.mean;
+	sig = BPF.ar(sig, 2000 * [1, 2, 3, 5]) * [1, 0.7, 1, 0.7];
+	sig = Limiter.ar(sig, 1);
+	sig = sig * EnvGen.ar(Env.perc(att, rel), doneAction:2);
+	sig = sig * amp;
+	sig = Splay.ar(sig);
+	Out.ar(out, sig);
+}).add;
+
+SynthDef(\sn, {|out = 0, amp = 0.7, att = 0.01,rel = 0.6, wn = 0.9, rFreq = 500|
+	var snd, env;
+	snd = WhiteNoise.ar();
+	env = EnvGen.ar(Env.xyc([[0,0, -2],[att* 0.3,1,-2],[att* 0.6,0.6,-2],[att* 0.8,1,-2],[att* 0.3,0.4,-2],[0.07,0.2,-2], [rel,0,-2],]), doneAction:2);
+	snd = RLPF.ar(snd, [1, 2, 3, 4, 5] * rFreq);
+	snd = Splay.ar(snd);
+	Out.ar(out, snd * env * amp);
+}).add;
+
 )
 
 

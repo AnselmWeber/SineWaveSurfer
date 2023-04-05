@@ -9,8 +9,113 @@ Pdef(\bass, Pbind(
 	\root, Pgate(Pseq([0, 0, 5, 5]), inf, \step),
 	\out, 220,
 	\group, 210
+)).stop;
+)
+
+
+TempoClock.default.tempo = 75/60;
+(
+Pdef(\surfbass, Pbind(
+	\instrument, \surfbass,
+	\amp, Pseq([2, 1, 1, 1], inf) *0.25 * Prand([0.8, 0.9, 0.7, 0.6], inf) * Pwrand([0, 1], [1, 6].normalizeSum, inf),
+	\dur, Pseq([1, 1, 1, 1], inf)/8,
+	\scale, Scale.chromatic,
+
+	\degree, Pseq([Pn(0, 4), Pn(3, 4), Pn(7, 4), Pn(3, 4)], inf) + Pseq([ Pn(0, 16), Pn(3, 16), Pn(6, 16), Pn(8, 16)], inf),
+
+	\degree, Pseq([Pn(0, 4), Pn(3, 4), Pn(7, 4), Pn(3, 4)], inf) + Pseq([ Pn(0, 16), Pn(3, 16), Pn(6, 16), Pn(8, 16)], inf),
+	\degree, Pn([0, 3, 7, 8], inf) + 0,
+	\detune, Pwhite(-0.1, 0.1, inf),
+	\octave, Pwrand([3, 4],[9, 1].normalizeSum, inf),
+	\release, Prand([0.8, 0.9, 0.7, 0.6], inf) * 0.25,
+	//\root, Pgate(Pseq([0, 0, 5, 5]), inf, \step),
+	\out, 220,
+	\group, 210,
+	\addAction, \addToTail
 )).play;
 )
+
+
+(
+Pdef(\snare, Pbind(
+	\instrument, \sn,
+	\dur, Pseq([1, 1, 1, 1], inf)/4,
+	\amp, Pseq([0, 0, 1, 1, 0, 0, 1, 0 ], inf) /2,
+	//\degree, Pn(0, inf),
+	//\detune, Pwhite(-0.1, 0.1, inf),
+	//\octave, Pwrand([3, 5],[9, 1].normalizeSum, inf),
+	\rel, Prand([0.8, 0.9, 0.7, 0.6], inf) * 0.1,
+	\rFreq, Pwhite(1000, 2000, inf),
+	//\root, Pgate(Pseq([0, 0, 5, 5]), inf, \step),
+	\out, 320,
+	\group, 310,
+)).play;
+)
+
+(
+Pdef(\kick, Pbind(
+	\instrument, \kck,
+	\dur, Pseq([1, 1, 1, 1], inf)/2,
+	\dur, Pwrand([Pn(1, 2)/4, Pn(1, 1)/2], [1, 4].normalizeSum, inf),
+	\dur, Pseq([1, 1, 1, 1], inf)/4,
+	\amp, Pseq([1, 0, 0, 1, 1, 1, 0, 1], inf)/1,
+	\freq, 60,
+	\rel, Prand([0.8, 0.9], inf) * 0.1,
+	//\root, Pgate(Pseq([0, 0, 5, 5]), inf, \step),
+	\out, 120,
+	\group, 110,
+	\addAction, \addToTail
+)).play;
+)
+
+(
+Pdef(\kick_2, Pbind(
+	\instrument, \kck,
+	\dur, Pseq([1, 1, 1, 1], inf)/2,
+	\dur, Pwrand([Pn(1, 2)/4, Pn(1, 1)/2], [1, 4].normalizeSum, inf),
+	\dur, Pseq([1, 1, 1, 1], inf)/4,
+	\amp, Pseq([0, 1, 1, 1, 0, 0, 0, 1], inf)/1,
+	\freq, 100,
+	\rel, Prand([0.8, 0.9], inf) * 0.03,
+	//\root, Pgate(Pseq([0, 0, 5, 5]), inf, \step),
+	\out, 120,
+	\group, 110,
+	\addAction, \addToTail
+)).play;
+)
+s.plotTree
+
+g.(\230);
+(
+Ndef(\230)[1] = \filter -> {|in, lfFreq = 2|
+	var snd, lfo;
+	snd = in;
+	lfo = LFNoise2.ar(lfFreq).range(2, 5);
+	snd = BPF.ar(snd,lfo * 100* [1, 2, 3, 4, 5, 6, 7, 8, 10, 13]);
+	snd = Mix.ar(snd);
+	snd = in;
+};
+
+)
+Ndef(\230).fadeTime = 10;
+
+
+
+g.(\240);
+(
+Ndef(\240)[1] = \filter -> {|in, lfFreq = 10|
+	var snd, lfo;
+	snd = in;
+	lfo = LFNoise2.ar(lfFreq).range(1.0, 6.1);
+	snd = BPF.ar(snd,lfo * 100* [1, 2, 3, 4, 5, 6, 7, 8, 10, 13]);
+	snd = Splay.ar(snd/ 5);
+	snd = in;
+};
+)
+
+Ndef(\240).fadeTime = 20;
+
+
 
 s.meter;
 // g function mit name == slot
