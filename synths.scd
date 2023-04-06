@@ -142,6 +142,24 @@ SynthDef(\sn, {|out = 0, amp = 0.7, att = 0.01,rel = 0.6, wn = 0.9, rFreq = 500|
 	Out.ar(out, snd * env * amp);
 }).add;
 
+
+SynthDef(\snare, {
+    |out = 0, pan = 0, amp = 0.3, popRatio = 4, filFreq = 1410|
+    var pop, popAmp, popFreq;
+    var noise, noiseAmp;
+    var snd;
+
+    popFreq = EnvGen.ar(Env([ filFreq * popRatio, 410, 160], [0.005, 0.01], curve: \exp));
+    popAmp = EnvGen.ar(Env.perc(0.001, 0.11)) * 0.7;
+    pop = SinOsc.ar(popFreq) * popAmp;
+    // bandpass-filtered white noise
+    noiseAmp = EnvGen.ar(Env.perc(0.001, 0.15), doneAction: 2);
+    noise = BPF.ar(WhiteNoise.ar, filFreq, 1.6) * noiseAmp;
+    snd = (pop + noise) * 1.3;
+    Out.ar(out, Pan2.ar(snd, pan, amp));
+}).add;
+Synth(\snare, [amp: 0.2, \filFreq, 1900, \popRatio, 0.3]);
+
 SynthDef(\master, { |wetlevel = -0.8, dist = 2|
 
 	var snd, wet, in;
