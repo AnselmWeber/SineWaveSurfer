@@ -1,45 +1,51 @@
-
-s.options.memSize_(65536 * 4);
-s.boot;
-
 (
-~s0 = Buffer.read(s,"/Users/anselmweber/Downloads/Savegames/Dick Dale & The Del Tones ＂Misirlou＂ 1963.wav");
-~s1 = Buffer.read(s, "/Users/anselmweber/Downloads/Savegames/Surfaris - Wipe Out.wav");
-
-// sideChain for kick
-~sck = Bus.audio(s, 2);
-
-~b_arr = [~s0, ~s1];
+~s0 = Buffer.read(s, "/Users/anselmweber/Desktop/SineWaveSurfer/Sessions/Anselm/Tremolo.wav");
 
 
-p = (
-	\dRoll: [\index, 1, \start, 10, \end, 12],
-	\woo: [\index, 1, \start, 3.0, \end, 5.1],
-	\trem: [\index, 0, \start, 3.0, \end, 6.0]
-);
-)
+SynthDef(\p_out, { |out = 0, in = 0|
+	var snd;
+	snd = In.ar(in, 2);
+	ReplaceOut.ar(out, snd);
+}).add;
 
-(
+
+Ndef(\p_out, { |in|
+
+	In.ar(in, 2);
+
+});
+
+
+Ndef(\proto, { |inbus|
+
+	In.ar(inbus, 2);
+
+});
+
 SynthDef(\sp, { |start = 0, end = 44100, index = 0, rate = 1.0, rel = 1.0, amp = 0.5, dist = 1, out = 0|
 
 	var snd, phase, rd_0, rd_1, env;
 
-	env = EnvGen.ar(Env([0, 1, 0], [0.001, rel]),doneAction: 2);
+	env = EnvGen.ar(Env([1, 1, 1], [0.001, rel]),doneAction: 2);
 
-	start = start * 44100;
-	end = end * 44100;
+	start = 1 * 44100;
+	end = BufFrames.kr(~s0);
 
 	phase = Phasor.ar(0, rate, start, end);
+	//phase = LFCub.ar(rate).range(start, end);
 
-	rd_0 = BufRd.ar(2, ~s0, phase).sum.dup;
-	rd_1 = BufRd.ar(2, ~s1, phase).sum.dup;
+	snd = BufRd.ar(2, ~s0, phase).sum.dup;
+	//rd_1 = BufRd.ar(2, ~s1, phase).sum.dup;
 
-	snd = Select.ar(index, [rd_0, rd_1]) * env;
-	snd = (snd * dist).tanh * 0.5;
+	//snd = Select.ar(index, [rd_0, rd_1]) * env;
+	snd = Splay.ar(snd.scramble);
+	snd = (snd * 2).tanh * 0.5;
 
 	Out.ar(out, snd * amp);
 }).add;
 
+
+~sck = Bus.audio(s, 2);
 
 SynthDef(\kck, {|out = 200, amp = 0.4, freq = 60, att = 0.01, rel = 0.4, hmul = 4|
 	var snd, env;
@@ -136,7 +142,28 @@ SynthDef(\sn, {|out = 0, amp = 0.7, att = 0.01,rel = 0.6, wn = 0.9, rFreq = 500|
 	Out.ar(out, snd * env * amp);
 }).add;
 
+SynthDef(\master, { |wetlevel = -0.8, dist = 2|
+
+	var snd, wet, in;
+
+	in  = In.ar(0, 2);
+	snd = in;
+
+	snd = BHiShelf.ar(snd, 1200, 1.0, 6.0);
+
+	snd = DCompressor.ar(snd, 0, 0, 40, -20, 0.001, 100, 2).tanh * 0.9;
+
+	wet = NHHall.ar(snd, 2.0, 1.0, 400, 0.5);
+	//wet = GVerb.ar(wet, 2, 0.1, 0.5, 0.5, 15, 1.0);
+	wet = HPF.ar(wet, 400);
+
+	snd = XFade2.ar(snd, wet, wetlevel);
+
+	ReplaceOut.ar(0, snd.clip(-1, 1));
+
+}).add;
 )
+
 
 
 
