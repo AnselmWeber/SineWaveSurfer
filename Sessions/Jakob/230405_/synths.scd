@@ -3,11 +3,9 @@ s.options.memSize_(65536 * 4);
 s.boot;
 
 (
-~s0 = Buffer.read(s,"/Users/anselmweber/Downloads/Savegames/Dick Dale & The Del Tones ＂Misirlou＂ 1963.wav");
-~s1 = Buffer.read(s, "/Users/anselmweber/Downloads/Savegames/Surfaris - Wipe Out.wav");
+// ~s0 = Buffer.read(s,"/Users/anselmweber/Downloads/Savegames/Dick Dale & The Del Tones ＂Misirlou＂ 1963.wav");
+// ~s1 = Buffer.read(s, "/Users/anselmweber/Downloads/Savegames/Surfaris - Wipe Out.wav");
 
-// sideChain for kick
-~sck = Bus.audio(s, 2);
 
 ~b_arr = [~s0, ~s1];
 
@@ -17,30 +15,29 @@ p = (
 	\woo: [\index, 1, \start, 3.0, \end, 5.1],
 	\trem: [\index, 0, \start, 3.0, \end, 6.0]
 );
-)
 
-(
-SynthDef(\sp, { |start = 0, end = 44100, index = 0, rate = 1.0, rel = 1.0, amp = 0.5, dist = 1, out = 0|
+// SynthDef(\sp, { |start = 0, end = 44100, index = 0, rate = 1.0, rel = 1.0, amp = 0.5, dist = 1, out = 0|
+//
+// 	var snd, phase, rd_0, rd_1, env;
+//
+// 	env = EnvGen.ar(Env([0, 1, 0], [0.001, rel]),doneAction: 2);
+//
+// 	start = start * 44100;
+// 	end = end * 44100;
+//
+// 	phase = Phasor.ar(0, rate, start, end);
+//
+// 	rd_0 = BufRd.ar(2, ~s0, phase).sum.dup;
+// 	rd_1 = BufRd.ar(2, ~s1, phase).sum.dup;
+//
+// 	snd = Select.ar(index, [rd_0, rd_1]) * env;
+// 	snd = (snd * dist).tanh * 0.5;
+//
+// 	Out.ar(out, snd * amp);
+// }).add;
 
-	var snd, phase, rd_0, rd_1, env;
-
-	env = EnvGen.ar(Env([0, 1, 0], [0.001, rel]),doneAction: 2);
-
-	start = start * 44100;
-	end = end * 44100;
-
-	phase = Phasor.ar(0, rate, start, end);
-
-	rd_0 = BufRd.ar(2, ~s0, phase).sum.dup;
-	rd_1 = BufRd.ar(2, ~s1, phase).sum.dup;
-
-	snd = Select.ar(index, [rd_0, rd_1]) * env;
-	snd = (snd * dist).tanh * 0.5;
-
-	Out.ar(out, snd * amp);
-}).add;
-
-
+// sideChain for kick
+~sck = Bus.audio(s, 2);
 SynthDef(\kck, {|out = 200, amp = 0.4, freq = 60, att = 0.01, rel = 0.4, hmul = 4|
 	var snd, env;
 	snd  = SinOsc.ar(freq * XLine.kr(hmul, 1, att * 4) * [1, 1.01], 0.4);
@@ -56,7 +53,8 @@ SynthDef(\surfbass, { |freq = 50, in, out = 0, release = 0.5, amp = 0.2, cutoff 
 
 	env = EnvGen.ar(Env([0, 1, 0], [0.0001, release]), doneAction: 2);
 	trig = Line.ar(-1, 1, 1 / 44100);
-	freq = freq.lag(1) * [1, 1.01];
+	freq = freq + In.kr(202);
+	freq = freq.lag(1) * [1, 1.01] ;
 
 	snd = Pluck.ar(WhiteNoise.ar(0.1), trig, 0.2, 1 / freq, release * 0.5, 0.5);
 	snd = Blip.ar(freq, 6, Decay2.ar(trig, 0.0001, 0.01) * 0.1) + snd;
@@ -102,6 +100,7 @@ SynthDef(\pluck, { |freq = 440, in, out = 0, release = 1.0, amp = 1.0, dist = 10
 	Out.ar(out, snd * amp)
 
 }).add;
+
 
 
 SynthDef(\jride, { arg out=0, gate=1, amp=0.1, pan=0, freq=300, rel = 1, att = 0.01;
