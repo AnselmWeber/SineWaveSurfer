@@ -1,6 +1,10 @@
 
 
 (
+~rotateBus = Bus.control(s, 1);
+~rotateBus.set(0);
+~rotate = 0.0;
+
 
 //white out everything
 ~white = 0;
@@ -27,15 +31,17 @@
 
 
 
-
 ~spec_seaGreen = ControlSpec(159, 255, \lin, 0.1, 159);
 ~spec_seaRed = ControlSpec(2, 255, \lin, 0.1, 159);
 
 
-~boardNum = 4;
+~boardNum = 1;
 ~boardFreq = 0.2;
 //beachColor: Color.new255(red: 255, green: 205, blue: 20, alpha: 255);
-~tideFreq = 0.1;
+~tideFreq = 4.9;
+
+~getBackgroundColor = {|black= 0, white=0| Color.new255(red: ((1-black) * 255)  , green: ((1-black) * 115) +  (140 * white),
+	blue: (255 * white), alpha: 255);};
 
 ~getBeachColor = {|black= 0, white=0| Color.new255(red: ((1-black) * 255)  , green: ((1-black) * 205) +  (50 * white),
 	blue: ((1-black) * 20) +(235 * white), alpha: 255);};
@@ -97,17 +103,25 @@ r = Routine({ arg appClockTime;
 
 		~boardBlackBlackBus.get({|val| ~boardBlack = val;});
 
+		~rotateBus.get({|val| ~rotate = val;});
+
 		x.drawFunc= {|offset = 0|
+			//BackGround
+			Pen.fillColor= ~getBackgroundColor.value(0, 0);
+			Pen.fillRect(Rect(0, 0 , screenDimensionX, screenDimensionY));  //10 pixels from left, 20 from
+
+
 			//~seaColor = Color.newHex("#32a7fa");
 			~seaColor =~getSeaColor.value(~seaBlack, ~white);
 			sea_beach = sea_beach_min + (~calcTide.value(i, ~tideFreq) * sea_beach_amp) ;
 
-
+			Pen.rotate(~rotate, screenDimensionX/2, ~toYScreen.value(sky_sea)/2);
 			//Himmel
 			Pen.addRect(Rect(0, 0, screenDimensionX, ~toYScreen.value(sky_sea)));
 			Pen.fillAxialGradient(Point(0, 0), Point(screenDimensionX, 0) , ~getSkyColor_1.value(~skyBlack, ~white), ~getSkyColor_2.value(~skyBlack, ~white));
 			//Pen.fillColor= Color.cyan;  //set fill color
 
+			Pen.rotate( ~rotate * -2, screenDimensionX/2, ~toYScreen.value(sky_sea + ((sea_beach - sky_sea)/2) )/2);
 			//Sea
 			Pen.fillColor= ~seaColor;
 			Pen.fillRect(Rect(0, ~toYScreen.value(sky_sea) , screenDimensionX, ~toYScreen.value((sea_beach - sky_sea) * (1 - surfHeightPerc))));  //10 pixels from left, 20 from
@@ -117,6 +131,8 @@ r = Routine({ arg appClockTime;
 			Pen.addRect(Rect(0, ~toYScreen.value(sky_sea + ((sea_beach - sky_sea) * (1 - surfHeightPerc))), screenDimensionX, ~toYScreen.value((sea_beach - sky_sea) * surfHeightPerc)));
 			Pen.fillAxialGradient(Point(screenDimensionX/2, ~toYScreen.value(sky_sea + ((sea_beach - sky_sea) * (1 - surfHeightPerc)))), Point(screenDimensionX/2, ~toYScreen.value(sea_beach)) , ~seaColor,  ~getBeachColor.value(~beachBlack, ~white));
 
+
+			Pen.rotate( ~rotate * 2, screenDimensionX/2, ~toYScreen.value(sea_beach + ((screenDimensionY- sea_beach)/2) )/2);
 			//Beach
 			Pen.fillColor= ~getBeachColor.value(~beachBlack, ~white);
 			Pen.fillRect(Rect(0, ~toYScreen.value(sea_beach), screenDimensionX, ~toYScreen.value(100 - sea_beach)));
@@ -125,9 +141,9 @@ r = Routine({ arg appClockTime;
 				//Board
 				Pen.fillColor= ~getBoardColor_1.value(~boardBlack, ~white);
 				boardWidth = boardMaxWidth * (0.05 + ~calcBoardTurn.value(i, ~boardFreq));
-				Pen.fillOval(Rect(((boardPosX * boardIndex *2) - (boardWidth * 0.5)), ~toYScreen.value(boardPosY ), boardWidth, ~toYScreen.value(boardHeight)));  //180 pixels wide, 80 high
+				Pen.fillOval(Rect(((boardPosX * (1 + boardIndex) *2) - (boardWidth * 0.5)), ~toYScreen.value(boardPosY ), boardWidth, ~toYScreen.value(boardHeight)));  //180 pixels wide, 80 high
 				Pen.fillColor= ~getBoardColor_2.value(~boardBlack, ~white);
-				Pen.fillOval(Rect(((boardPosX * boardIndex *2) - (boardWidth * 0.5)) + (boardWidth*0.2), ~toYScreen.value(boardPosY  + (boardHeight*0.1)), boardWidth*0.6, ~toYScreen.value(boardHeight*0.8)));  //180 pixels wide, 80 high
+				Pen.fillOval(Rect(((boardPosX * (1 + boardIndex) *2) - (boardWidth * 0.5)) + (boardWidth*0.2), ~toYScreen.value(boardPosY  + (boardHeight*0.1)), boardWidth*0.6, ~toYScreen.value(boardHeight*0.8)));  //180 pixels wide, 80 high
 			}
 
 		};
