@@ -8,7 +8,6 @@
 
 ~b_arr = [~s0, ~s1];
 
-
 p = (
 	\dRoll: [\index, 1, \start, 10, \end, 12],
 	\woo: [\index, 1, \start, 3.0, \end, 5.1],
