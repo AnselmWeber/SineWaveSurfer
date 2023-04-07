@@ -56,6 +56,31 @@ SynthDef(\kck, {|out = 200, amp = 0.4, freq = 60, att = 0.01, rel = 0.4, hmul = 
 
 }).add;
 
+SynthDef(\kick, {
+    |out = 0, pan = 0, amp = 0.3, rel = 0.3|
+    var body, bodyFreq, bodyAmp;
+    var pop, popFreq, popAmp;
+    var click, clickAmp;
+    var snd;
+
+    // body starts midrange, quickly drops down to low freqs, and trails off
+    bodyFreq = EnvGen.ar(Env([261, 120, 51], [0.035, 0.08], curve: \exp));
+    bodyAmp = EnvGen.ar(Env.linen(0.005, rel/3, rel), doneAction: 2);
+	body = SinOsc.ar(bodyFreq ) / 2 * bodyAmp;
+    // pop sweeps over the midrange
+    popFreq = XLine.kr(750, 261, 0.02);
+    popAmp = EnvGen.ar(Env.linen(0.001, 0.02, 0.001)) * 0.15;
+    pop = SinOsc.ar(popFreq) * popAmp;
+    // click is spectrally rich, covering the high-freq range
+    // you can use Formant, FM, noise, whatever
+    clickAmp = EnvGen.ar(Env.perc(0.001, 0.01)) * 0.15;
+    click = LPF.ar(Formant.ar(910, 4760, 2110), 3140) * clickAmp;
+
+	snd = Mix.ar((body + pop + click));
+    snd = snd.tanh;
+
+    Out.ar(out, Pan2.ar(snd, pan, amp));
+}).add;
 
 //freq line deleted
 SynthDef(\surfbass, { |freq = 50, in, out = 0, release = 0.5, amp = 0.2, cutoff = 4|
@@ -146,18 +171,21 @@ SynthDef(\sn, {|out = 0, amp = 0.7, att = 0.01,rel = 0.6, wn = 0.9, rFreq = 500|
 }).add;
 
 
+
 SynthDef(\snare, {
-    |out = 0, pan = 0, amp = 0.3, popRatio = 4, filFreq = 1410, att = 0.001, rel = 0.15|
+    |out = 0, pan = 0, amp = 0.3, popRatio = 4, filFreq = 1410, att = 0.001, rel = 0.15, delSpread = 1|
     var pop, popAmp, popFreq;
     var noise, noiseAmp;
     var snd;
 
-    popFreq = EnvGen.ar(Env([ filFreq * popRatio, 410, 160], [0.005, 0.01], curve: \exp));
-    popAmp = EnvGen.ar(Env.perc(0.001, 0.11)) * 0.7;
+    popFreq = EnvGen.ar(Env([ filFreq * popRatio, 410, 160], [0.005, rel * 0.02], curve: \exp));
+    popAmp = EnvGen.ar(Env.perc(0.001, rel * 0.6)) * 0.7;
     pop = SinOsc.ar(popFreq) * popAmp;
-    noiseAmp = EnvGen.ar(Env.perc(0.001, 0.15), doneAction: 2);
-    noise = BPF.ar(WhiteNoise.ar, filFreq, 1.6) * noiseAmp;
+    noiseAmp = EnvGen.ar(Env.perc(0.001, rel), doneAction: 2);
+	noise = BPF.ar(WhiteNoise.ar, filFreq, 1.6) * noiseAmp * LFNoise0.ar(40);
     snd = (pop + noise) * 1.3;
+	snd = snd + DelayC.ar(snd, 0.1, LFNoise0.kr().range(0.1, 1)*[0.01, 0.003, 0.02] * delSpread);
+	snd = Mix.ar(snd/3);
     Out.ar(out, Pan2.ar(snd, pan, amp));
 }).add;
 
