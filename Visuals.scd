@@ -3,7 +3,7 @@
 (
 
 //white out everything
-~white = 1;
+~white = 0;
 ~whiteBus = Bus.control(s, 1);
 ~whiteBus.set(1);
 
@@ -32,6 +32,7 @@
 ~spec_seaRed = ControlSpec(2, 255, \lin, 0.1, 159);
 
 
+~boardNum = 4;
 ~boardFreq = 0.2;
 //beachColor: Color.new255(red: 255, green: 205, blue: 20, alpha: 255);
 ~tideFreq = 0.1;
@@ -72,9 +73,8 @@ sea_beach, sea_beach_min = 60,  sea_beach_amp = 20,
 seaHeight, surfHeight;
 
 
-screenDimensionX = 1300;
+screenDimensionX = 750;
 screenDimensionY = 750;
-
 
 
 
@@ -120,15 +120,16 @@ r = Routine({ arg appClockTime;
 
 			//Beach
 			Pen.fillColor= ~getBeachColor.value(~beachBlack, ~white);
-			Pen.fillRect(Rect(0, ~toYScreen.value(sea_beach), screenDimensionX, ~toYScreen.value(screenDimensionY - sea_beach)));
+			Pen.fillRect(Rect(0, ~toYScreen.value(sea_beach), screenDimensionX, ~toYScreen.value(100 - sea_beach)));
 
-			//Board
-			Pen.fillColor= ~getBoardColor_1.value(~boardBlack, ~white);
-			boardWidth = boardMaxWidth * (0.05 + ~calcBoardTurn.value(i, ~boardFreq));
-			Pen.fillOval(Rect((boardPosX - (boardWidth * 0.5)), ~toYScreen.value(boardPosY), boardWidth, ~toYScreen.value(boardHeight)));  //180 pixels wide, 80 high
-			Pen.fillColor= ~getBoardColor_2.value(~boardBlack, ~white);
-			Pen.fillOval(Rect((boardPosX - (boardWidth * 0.5)) + (boardWidth*0.2), ~toYScreen.value(boardPosY + (boardHeight*0.1)), boardWidth*0.6, ~toYScreen.value(boardHeight*0.8)));  //180 pixels wide, 80 high
-
+			~boardNum.do{|boardIndex|
+				//Board
+				Pen.fillColor= ~getBoardColor_1.value(~boardBlack, ~white);
+				boardWidth = boardMaxWidth * (0.05 + ~calcBoardTurn.value(i, ~boardFreq));
+				Pen.fillOval(Rect(((boardPosX * boardIndex *2) - (boardWidth * 0.5)), ~toYScreen.value(boardPosY ), boardWidth, ~toYScreen.value(boardHeight)));  //180 pixels wide, 80 high
+				Pen.fillColor= ~getBoardColor_2.value(~boardBlack, ~white);
+				Pen.fillOval(Rect(((boardPosX * boardIndex *2) - (boardWidth * 0.5)) + (boardWidth*0.2), ~toYScreen.value(boardPosY  + (boardHeight*0.1)), boardWidth*0.6, ~toYScreen.value(boardHeight*0.8)));  //180 pixels wide, 80 high
+			}
 
 		};
 		i = i+ 1;

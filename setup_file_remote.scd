@@ -2,13 +2,12 @@
 (
 o = ServerOptions.new;
 o.protocol_(\tcp);
-s = Server.remote(\remote, NetAddr("172.20.10.7", 57110), o); // set to correct address and port
+s = Server.remote(\remote, NetAddr("192.168.43.129", 57110), o); // set to correct address and port
 s.addr.connect;
 s.startAliveThread( 0 );
 s.doWhenBooted({ "remote tcp server started".postln; s.notify; s.initTree });
 Server.default = s;
 )
-
 
 // Out Synths / Ndefs + proto Ndef für die g function
 (
