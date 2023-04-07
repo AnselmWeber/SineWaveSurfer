@@ -97,7 +97,6 @@ r = Routine({ arg appClockTime;
 
 		~boardBlackBlackBus.get({|val| ~boardBlack = val;});
 
-		l.postln;
 		x.drawFunc= {|offset = 0|
 			//~seaColor = Color.newHex("#32a7fa");
 			~seaColor =~getSeaColor.value(~seaBlack, ~white);
