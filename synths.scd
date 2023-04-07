@@ -64,6 +64,7 @@ SynthDef(\surfbass, { |freq = 50, in, out = 0, release = 0.5, amp = 0.2, cutoff 
 
 	env = EnvGen.ar(Env([0, 1, 0], [0.0001, release]), doneAction: 2);
 	trig = Line.ar(-1, 1, 1 / 44100);
+	freq = freq + In.kr(202);
 	freq = freq.lag(1) * [1, 1.01] ;
 
 	snd = Pluck.ar(WhiteNoise.ar(0.1), trig, 0.2, 1 / freq, release * 0.5, 0.5);
