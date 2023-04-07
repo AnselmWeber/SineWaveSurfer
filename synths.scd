@@ -56,6 +56,8 @@ SynthDef(\kck, {|out = 200, amp = 0.4, freq = 60, att = 0.01, rel = 0.4, hmul = 
 
 }).add;
 
+
+//Surfinnnn
 SynthDef(\surfbass, { |freq = 50, in, out = 0, release = 0.5, amp = 0.2, cutoff = 4|
 
 	var snd, trig, env;
@@ -181,5 +183,6 @@ SynthDef(\master, { |wetlevel = -0.8, dist = 2|
 
 }).add;
 )
+
 
 
