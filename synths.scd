@@ -102,23 +102,22 @@ SynthDef(\surfbass, { |freq = 50, in, out = 0, release = 0.5, amp = 0.2, cutoff 
 
 }).add;
 
-SynthDef(\pluck, { |freq = 440, in, out = 0, release = 1.0, amp = 1.0, dist = 10, pm = 0|
+SynthDef(\pluck, { |freq = 440, in, out = 0, release = 1.0, amp = 1.0, dist = 10, pm = 0,gain = 0.5|
 
-	var snd, env, trig, chord, muted, envmute, vib;
+	var snd, env, trig, chord, muted, envmute, vib, supermuted;
 
 	vib = SinOsc.ar(16).range(0.99, 1.01);
 
-	chord = freq * [0.5, 1.5, 1, 2.0];
+	chord = freq * [0.5, 1.5, 1, 2.0] + In.kr(202);
 
-	chord = freq;
-	env =  EnvGen.ar(Env([0, 1, 0], [0.0001, release]), doneAction: 2);
-	envmute = EnvGen.ar(Env([0, 1, 0], [0.0001, release * 0.2]));
+	//chord = freq;
+	env =  EnvGen.ar(Env.perc(0.001, release), doneAction: 2);
+	envmute = EnvGen.ar(Env.perc(0.001, release * 0.1));
 
-	env = Select.ar(pm, [env, envmute]);
 
 	trig = Line.ar(-1, 1, 1 / 44100);
 	//trig = Impulse.ar(10);
-	snd = Pluck.ar(WhiteNoise.ar(1.0) ,trig, 0.04, 1 / (chord * [1, 1.01] * vib), release, 0.7);
+	snd = Pluck.ar(WhiteNoise.ar(1.0) ,trig, 0.04, 1 / (chord * [1, 1.01] * vib), release * 10, 0.5);
 	//snd = CombC.ar(snd, 0.125, 1 / freq, release);
 	//snd = DelayL.ar(snd, 0.5, [0.0, 0.25, 0.5, 1.0] * 0.25);
 	snd = Splay.ar(snd.scramble);
@@ -126,12 +125,20 @@ SynthDef(\pluck, { |freq = 440, in, out = 0, release = 1.0, amp = 1.0, dist = 10
 	snd = (snd * dist).tanh * 0.85;
 
 	muted = MoogFF.ar(snd * 10, freq * 3, 2.5).tanh;
+	muted = LPF.ar(muted,  2000 );
+	supermuted = MoogLadder.ar(muted * 1000, 840, 1.0) * envmute * 1.5;
+	muted = muted * env;
 
-	snd = Select.ar(pm, [snd, muted]);
+	snd = Select.ar(pm, [supermuted, muted]);
 
 	snd = LeakDC.ar(snd);
+	//snd = AnalogVintageDistortion.ar(snd, gain, 0.1);
 
-	snd = snd * env;
+	snd = BLowCut.ar(snd, 120, 4);
+	//snd = LPF.ar(snd, 2000 + (10000 *  (1 -pm)));
+
+	//snd = DCompressor.ar(snd, 0, 0, 30, -80, 0.001, 100, 0.0) * 0.95;
+	snd = Compander.ar(snd, snd * 1.0, 0.5, 1.0, 0.6, 0.001, 0.1);
 
 	Out.ar(out, snd * amp)
 
