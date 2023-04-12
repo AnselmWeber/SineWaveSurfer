@@ -8,7 +8,7 @@ s.startAliveThread( 0 );
 s.doWhenBooted({ "remote tcp server started".postln; s.notify; s.initTree });
 Server.default = s;
 )
-
+(target: 100, addAction:\addToTail).play
 // Out Synths / Ndefs + proto Ndef für die g function
 (
 ~check_list = List.new;
