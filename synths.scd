@@ -109,6 +109,7 @@ SynthDef(\pluck, { |freq = 440, in, out = 0, release = 1.0, amp = 1.0, dist = 2,
 
 	vib = SinOsc.ar(16).range(0.99, 1.01);
 
+	freq = freq + In.kr(202);
 	chord = freq * [0.5, 1.5, 1, 2.0] + In.kr(202);
 
 	//chord = freq;
