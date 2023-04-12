@@ -51,7 +51,7 @@ SynthDef(\kck, {|out = 200, amp = 0.4, freq = 60, att = 0.01, rel = 0.4, hmul = 
 	var snd, env;
 	snd  = SinOsc.ar(freq * XLine.kr(hmul, 1, att * 4) * [1, 1.01], 0.4);
 	env = EnvGen.ar(Env.perc(att, rel), doneAction:2);
-	Out.ar(~sck, snd * env);
+	Out.ar(~sck, Amplitude.ar(snd, 0.01, 0.1).linlin(0, 1, 50, 400));
 	Out.ar(out, snd * env * amp);
 
 }).add;
@@ -79,7 +79,7 @@ SynthDef(\kick, {
 	snd = Mix.ar((body + pop + click));
 	snd = snd .tanh ;
 	snd = HPF.ar(snd, 100);
-
+	Out.ar(~sck, Amplitude.ar(snd, 0.01, 0.1).linlin(0, 1, 50, 400));
     Out.ar(out, Pan2.ar(snd, pan, amp));
 }).add;
 
