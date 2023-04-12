@@ -45,13 +45,13 @@ SynthDef(\sp, { |start = 0, end = 44100, index = 0, rate = 1.0, rel = 1.0, amp =
 }).add;
 
 
-~sck = Bus.audio(s, 2);
+~sck = Bus.audio(s, 1);
 
 SynthDef(\kck, {|out = 200, amp = 0.4, freq = 60, att = 0.01, rel = 0.4, hmul = 4|
 	var snd, env;
 	snd  = SinOsc.ar(freq * XLine.kr(hmul, 1, att * 4) * [1, 1.01], 0.4);
 	env = EnvGen.ar(Env.perc(att, rel), doneAction:2);
-	Out.ar(~sck, Amplitude.ar(snd, 0.01, 0.1).linlin(0, 1, 50, 400));
+	Out.ar(~sck, Amplitude.ar(snd.sum, 0.001, 0.001).linlin(0.01, 1.0, 0.0, 400.0));
 	Out.ar(out, snd * env * amp);
 
 }).add;
@@ -79,7 +79,7 @@ SynthDef(\kick, {
 	snd = Mix.ar((body + pop + click));
 	snd = snd .tanh ;
 	snd = HPF.ar(snd, 100);
-	Out.ar(~sck, Amplitude.ar(snd, 0.01, 0.1).linlin(0, 1, 50, 400));
+	Out.ar(~sck, Amplitude.ar(snd, 0.001, 0.001).linlin(0.01, 1.0, 0.0, 400.0));
     Out.ar(out, Pan2.ar(snd, pan, amp));
 }).add;
 
@@ -253,7 +253,7 @@ SynthDef(\snare, {
 }).add;
 
 
-SynthDef(\master, { |wetlevel = -0.8, dist = 2|
+SynthDef(\master, { |wetlevel = -0.85, dist = 2|
 
 	var snd, wet, in;
 
@@ -264,7 +264,7 @@ SynthDef(\master, { |wetlevel = -0.8, dist = 2|
 
 	snd = DCompressor.ar(snd, 0, 0, 40, -20, 0.001, 100, 2).tanh * 0.9;
 
-	wet = NHHall.ar(snd, 2.0, 1.0, 400, 0.5);
+	wet = NHHall.ar(snd, 1.0, 1.0, 400, 0.5);
 	//wet = GVerb.ar(wet, 2, 0.1, 0.5, 0.5, 15, 1.0);
 	wet = HPF.ar(wet, 400);
 
@@ -276,5 +276,3 @@ SynthDef(\master, { |wetlevel = -0.8, dist = 2|
 )
 
 
-
-s.plotTree;

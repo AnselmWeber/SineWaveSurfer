@@ -191,12 +191,18 @@ s.waitForBoot {
 
 	s.sync;
 
-	//~setup.();
-	ServerTree.add(~setup, s);
+	~setup.();
+	//ServerTree.add(~setup, s);
 
 
 };
 )
+
+().play
+
+~m.set(\dist, 2);
+
+Synth(\kck)
 
 
 
