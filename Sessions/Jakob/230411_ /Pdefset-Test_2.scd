@@ -1,34 +1,9 @@
-g.(\120)
 
 
 
-(
-Ndef(\gliss, {
-	var sig;
-
-						sig = 7000;
-					sig = Line.ar(7000, 0.01, 40);
-	Out.kr(202, sig);
-}).play;
-)
 
 
-g.(\420)
-
-
-
-Ndef(\420).fadeTime = 4;
-
-(
-Ndef(\420)[1] = \filter -> { |in, ffreq = 10|
-
-	var snd, lfo;
-	snd = in;
-}
-)
-Synth(\snare, [\out, 120] ,target: 110, addAction: \addToHead);
-
-
+s.boot
 
 
 (
@@ -41,44 +16,34 @@ Synth(\snare, [\out, 120] ,target: 110, addAction: \addToHead);
 	\bridge : Pseq([Pn(6, 16), Pn(7, 12), Pn(9, 2), Pn(7, 2)], inf),
 )
 )
-
-TempoClock.default.tempo = 150/120;
-
-x = Pn(Pdef(\git), inf).play;
 (
 Pdef(\git,
 	Pbind(
 		\instrument, \pluck,
-		\amp, Prand([1, 0.9, 0.8, 0.7], 3) * 0.4 * Pseq([1, 0.9, 0.8, 0.7], 2),
-		\dur, Pn(1/8, 14),
-		\degree, Pseq([Pn(6, 16), Pn(7, 12), Pn(9, 2), Pn(7, 2)], 16) ,
+		\amp, Prand([1, 0.9, 0.8, 0.7], inf) * 0.1 * Pseq([1, 0.9, 0.8, 0.7], inf),
+		\dur, Pwhite(0.999, 1.001, inf) /8,
+		\degree, Prand([Pn(0, 2), Pn(1, 4), Pn(2, 4), Pn(3, 4), Pn(4, 4), Pn(5, 2), Pn(6, 4), Pn(7, 2)], inf) ,
+		\degree, Pseq([Pn(6, 16), Pn(7, 12), Pn(9, 2), Pn(7, 2)], inf) ,
+
 		\degree, ~degdict.at(\misiRand).stutter(1) ,
-		\degree, Pn(Pseq([0, 0, 0, 3], 8),16, \step) +  ~degdict.at(\pipe).stutter(4) ,
-		\degree, Pn(0, 16),
-
-		\degree, Pseq([0, 0, 7, 0], 16),
-
-		\degree, 0,
-				\degree, ~degdict.at(\misi).stutter(2) ,
-		\pm, Pseq([1, 0, 0, 0], 16),
+		\degree, Pn(Pseq([0, 0, 0, 3], 8),inf, \step) +  ~degdict.at(\pipe).stutter(4) ,
+		\degree, Pn(0, inf),
+		\pm, Pseq([1, 0, 1, 0], inf) * Pbjorklund(3, 8, inf).stutter(2) ,
+		\pm, Pseq([1, 0, 0, 0], inf),
 		\pm, 1,
-		\pm,  Pbjorklund(3, 8, 16).stutter(2) ,
-		\pm, Pseq([1, 0, 1, 0], 16) * Pbjorklund(3, 8, 16).stutter(2) ,
-		\pm, 1,
-		\pm, [1, 0],
-
-
-				\root, 0,
+		\pm,  Pbjorklund(3, 8, inf).stutter(2) ,
+		\root, Pgate(Pseq([0, 0, 1, 0, 0, 5, 4, 1]), inf, \step),
+		\root, 0,
 		\octave, 4,
-				\octave, Prand([4, 5], 16),
-		\detune, Pwhite(0.0, 0.7, 16),
+		\detune, Pwhite(0.0, 0.7, inf),
 		\scale, Scale.chromatic,
-		\release, 0.1,
-		\out, 0,
+
+//		Pn(,inf, \step),
+		\release, 0.4,
 )).quant = 4;
 
-
+Pdef(\git).play;
 )
 
 
-Pdef(\git).set(\root, 10)
+Pdef(\git).set(\root, 5)

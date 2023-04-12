@@ -109,7 +109,6 @@ SynthDef(\pluck, { |freq = 440, in, out = 0, release = 1.0, amp = 1.0, dist = 2,
 
 	vib = SinOsc.ar(16).range(0.99, 1.01);
 
-	freq = freq + In.kr(202);
 	chord = freq * [0.5, 1.5, 1, 2.0] + In.kr(202);
 
 	//chord = freq;
@@ -128,9 +127,9 @@ SynthDef(\pluck, { |freq = 440, in, out = 0, release = 1.0, amp = 1.0, dist = 2,
 	// with our without ?
 	snd = FreeVerb.ar(snd, 1.0, 0.4, 0.5) * 1.5 + snd;
 
-	muted = MoogFF.ar(snd * 10, freq * 3, 2.5).tanh;
-	muted = LPF.ar(muted,  2000 );
-	supermuted = MoogLadder.ar(muted * 1000, 840, 1.0) * envmute * 1.5;
+	muted = MoogFF.ar(snd * 10, (freq + In.kr(202)) * 3, 2.5).tanh;
+	muted = LPF.ar(muted,  2000 + In.kr(202));
+	supermuted = MoogLadder.ar(muted * 1000, 840 + In.kr(202), 1.0) * envmute * 1.5;
 	muted = muted * env;
 
 	snd = Select.ar(pm, [supermuted, muted]);
@@ -138,7 +137,7 @@ SynthDef(\pluck, { |freq = 440, in, out = 0, release = 1.0, amp = 1.0, dist = 2,
 	snd = LeakDC.ar(snd);
 	//snd = AnalogVintageDistortion.ar(snd, gain, 0.1);
 
-	snd = BLowCut.ar(snd, 120, 4);
+	snd = BLowCut.ar(snd, 120 , 4);
 	//snd = LPF.ar(snd, 2000 + (10000 *  (1 -pm)));
 
 	//snd = DCompressor.ar(snd, 0, 0, 30, -80, 0.001, 100, 0.0) * 0.95;
@@ -146,6 +145,7 @@ SynthDef(\pluck, { |freq = 440, in, out = 0, release = 1.0, amp = 1.0, dist = 2,
 	//snd = GVerb.ar(snd, 1.0) * 0.1 + snd;
 
 	snd = BLowCut.ar(snd, 150, 2);
+	snd = Splay.ar(snd);
 
 	Out.ar(out, snd * amp)
 
