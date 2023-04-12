@@ -257,7 +257,7 @@ SynthDef(\master, { |wetlevel = -0.8, dist = 2|
 
 	var snd, wet, in;
 
-	in  = In.ar(0, 2);
+	in  = In.ar(0, 2) * dist;
 	snd = in;
 
 	snd = BHiShelf.ar(snd, 1200, 1.0, 6.0);
@@ -277,3 +277,4 @@ SynthDef(\master, { |wetlevel = -0.8, dist = 2|
 
 
 
+s.plotTree;
