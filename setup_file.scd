@@ -1,20 +1,8 @@
 // Out Synths / Ndefs + proto Ndef für die g function
 (
-s.options.memSize_(65536 * 4);
+~setup = {
 
-//s.options.protocol = \tcp; // set to use tcp
-//s.options.bindAddress = "0.0.0.0"; // allow connections from any address
-//s.options.maxLogins = 4; // set to correct number of clients
-
-s.latency = 1.0;
-
-
-s.waitForBoot {
 	var size, subSize, name, last_subId;
-	"synths.scd".loadRelative;
-
-	s.sync;
-
 
 	~check_list = List.new;
 	~check = {|name, fun|
@@ -36,9 +24,6 @@ s.waitForBoot {
 
 		})
 	};
-
-
-
 	//make group
 
 
@@ -189,11 +174,29 @@ s.waitForBoot {
 	*/
 	~m = Synth(\master, addAction: \addToTail);
 	s.plotTree
+
+};
+s.options.memSize_(65536 * 4);
+
+s.options.protocol = \tcp; // set to use tcp
+s.options.bindAddress = "0.0.0.0"; // allow connections from any address
+s.options.maxLogins = 4; // set to correct number of clients
+
+s.latency = 1.0;
+
+
+s.waitForBoot {
+
+	"synths.scd".loadRelative;
+
+	s.sync;
+
+	//~setup.();
+	ServerTree.add(~setup, s);
+
+
 };
 )
-
-
-
 
 
 
