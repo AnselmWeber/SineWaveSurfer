@@ -1,5 +1,4 @@
 
-
 (
 ~rotateBus = Bus.control(s, 1);
 ~rotateBus.set(0);
@@ -8,24 +7,24 @@
 
 //white out everything
 ~white = 0;
-~whiteBus = Bus.control(s, 1);
+~whiteBus = Bus.new(\control, 10, 1, s);
 ~whiteBus.set(1);
 
 
 //Blacking out different parts
-~beachBlackBus = Bus.control(s, 1);
+~beachBlackBus =Bus.new(\control, 11, 1, s);
 ~beachBlackBus.set(0);
 ~beachBlack = 0;
 
-~skyBlackBlackBus = Bus.control(s, 1);
+~skyBlackBlackBus = Bus.new(\control, 12, 1, s);
 ~skyBlackBlackBus.set(0);
 ~skyBlack = 0;
 
-~seaBlackBlackBus = Bus.control(s, 1);
+~seaBlackBlackBus = Bus.new(\control, 13, 1, s);
 ~seaBlackBlackBus.set(0);
 ~seaBlack = 0;
 
-~boardBlackBlackBus = Bus.control(s, 1);
+~boardBlackBlackBus = Bus.new(\control, 14, 1, s);
 ~boardBlackBlackBus.set(0);
 ~boardBlack = 0;
 
@@ -155,8 +154,8 @@ r = Routine({ arg appClockTime;
     w.close;
 });
 AppClock.play(r);
-
-
-
 )
+
+
+
 

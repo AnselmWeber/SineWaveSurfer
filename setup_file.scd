@@ -198,7 +198,7 @@ s.waitForBoot {
 };
 )
 
-().play
+().play;
 
 ~m.set(\dist, 2);
 
