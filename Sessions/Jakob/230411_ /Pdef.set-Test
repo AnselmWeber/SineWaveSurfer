@@ -1,0 +1,81 @@
+(
+SynthDef("Pdefhelp", { arg out, freq, sustain=1, amp=1, pan;
+    var env, u=1;
+    env = EnvGen.kr(Env.perc(0.03, sustain), 1, doneAction: Done.freeSelf);
+    3.do { var d; d = exprand(0.01, 1); u = SinOsc.ar(d * 300, u, rrand(0.1,1.2) * d, 1) };
+    Out.ar(out, Pan2.ar(SinOsc.ar(u + 1 * freq, 0, amp * env), pan));
+
+}).add;
+)
+s.boot;
+
+Pdef(\metronom, Pbind(\instrument, \pluck, \dur, 1, \degree, 16, \legato, 0.1)).stop;
+
+x = Pn(Pdef(\a), inf).play;
+(
+Pdef(\a, Pbind(
+	\instrument, \pluck,
+	\dur, 0.25/4,
+	\degree, Pseq([0, 5, 4, 3], 4)
+));
+)
+
+Pdef(\b, Pbind(\instrument,  \pluck, \dur, 0.125, \degree, Pseq(#[7, 8, 7, 8])));
+Pdef(\c, Pbind(\instrument,  \pluck, \dur, 0.25, \degree, Pseq(#[0, 1, 2], 2)));
+
+
+
+
+Pdef(\c, Pbind(\instrument, \Pdefhelp, \dur, 0.25, \degree, Pseq(#[4, 3, 1, 2]*3)));
+
+
+// infinite loops are scheduled (to ths clock's next beat by default) and released:
+
+Pdef(\a, Pbind(\instrument, \Pdefhelp, \dur, 0.753, \degree, Pseq(#[0, 5, 4, 3, 2], inf)));
+Pdef(\a, Pbind(\instrument, \Pdefhelp, \dur, 0.125, \degree, Pseq(#[0, 5, 4, 3] + 1, 1)));
+Pdef(\a, Pbind(\instrument, \Pdefhelp, \dur, 0.25, \degree, Pseq(#[0, 5, 4, 3] - 4, 1)));
+
+Pdef(\a, Pbind(\instrument, \Pdefhelp, \dur, 0.125, \degree, Pseq(#[0, 5] - 1, 1)));
+Pdef(\a, Pbind(\instrument, \Pdefhelp, \dur, 0.753, \degree, Pshuf(#[0, 5, 4, 3, 2], inf)));
+
+x.stop;
+Pdef(\metronom).stop;
+
+// Pdef can be used in multiple patterns:
+
+(
+x = Ppar([
+    Pbindf(Pn(Pdef(\a), inf),
+        \gtranspose, Pstutter(8, Pseq(#[0, 2, 0, 3],inf))
+    ),
+    Pbindf(Pn(Pdef(\a), inf),
+        \gtranspose, Pstutter(8, Pseq(#[7, 4, 0, 3],inf)),
+        \dur, 0.6
+    ),
+    Pbindf(Pn(Pdef(\a), inf),
+        \degree, Pseq(#[0, 5, 4, 3, 2, 3, 2], 1)
+    )
+]).play;
+)
+
+Pdef(\a, Pbind(\instrument, \Pdefhelp, \dur, 0.1, \degree, Pseq(#[0, 1, 0, 1, 2], inf)));
+
+Pdef(\a, Pbind(\instrument, \Pdefhelp, \dur, 0.2, \degree, Pseq([0, 4], inf)));
+
+Pdef(\a, Pbind(\instrument, \Pdefhelp, \dur, 1, \degree, Pseq([0, 4], inf)));
+
+Pdef(\a, Pbind(\instrument, \Pdefhelp, \dur, 0.2, \degree, Pseq([0, 4, Prand([6, 8b],2)], inf)));
+
+Pdef(\a, Pbind(\instrument, \Pdefhelp, \dur, 0.1, \degree, Pseq(#[0, 1b, 1, 2b, 2, 3, 4b, 4, 5], inf)));
+
+// using a fade time, the above changes are crossfaded
+Pdef(\a).fadeTime = 2;
+
+Pdef(\a, Pbind(\instrument, \Pdefhelp, \dur, 0.2, \degree, Pseq([0, 4, Prand([6, 8b],2)], inf)));
+
+// ...
+
+Pdef(\a).set(\detune, -50); // set environment
+Pdef(\a).set(\root, 10);
+
+x.stop;

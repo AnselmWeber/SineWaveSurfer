@@ -17,7 +17,7 @@ Pdef(\stroke, Pbind(
 	\group, 210,
 	\out, 220
 )).quant = 4;
-Pdef(\stroke).stop;
+Pdef(\stroke).play;
 
 Pdef(\bass, Pbind(
 	\instrument, \surfbass,
@@ -33,7 +33,7 @@ Pdef(\bass, Pbind(
 	\out, 120
 )).quant = 4;
 
-Pdef(\bass).stop;
+Pdef(\bass).play;
 )
 
 
@@ -158,7 +158,7 @@ TempoClock.default.tempo = 70/60;
 Pdef(\git,
 	Pbind(
 		\instrument, \pluck,
-		\amp, Prand([1, 0.9, 0.8, 0.7], inf) * 0.1 * Pseq([1, 0.9, 0.8, 0.7], inf),
+		\amp, Prand([1, 0.9, 0.8, 0.7], inf) * 0.6 * Pseq([1, 0.9, 0.8, 0.7], inf),
 		\dur, Pwhite(0.999, 1.001, inf) /8,
 		\degree, Prand([Pn(0, 2), Pn(1, 4), Pn(2, 4), Pn(3, 4), Pn(4, 4), Pn(5, 2), Pn(6, 4), Pn(7, 2)], inf) ,
 		\degree, Pseq([Pn(6, 16), Pn(7, 12), Pn(9, 2), Pn(7, 2)], inf) ,
@@ -191,7 +191,7 @@ Pdef(\kick, Pbind(
 	\instrument, \kick,
 	\freq, 70,
 	\amp,  0.8,
-	\amp, Pseq([Pseq([1, 0, 0, 0], 1), Pseq([1, 1, 0, 0], 1)], inf) * 0.4,
+	\amp, Pseq([Pseq([1, 0, 0, 0], 1), Pseq([1, 1, 0, 0], 1)], inf) * 0.1,
 	\dur, Pwrand([Pn( 0.5, 4), Pn(0.125, 16)], [6, 1].normalizeSum , inf),
 	\dur, 1/4,
 	\rel,  Pseq([2, 1, 1], inf) / 10,
@@ -221,12 +221,10 @@ Pdef(\snare, Pbind(
 	\amp, Pwrand([Pseq([0, 0, 1, 1 ], 1), Pseq([0, 1, 0, 1], 1)], [4, 1].normalizeSum,  inf) * 0.6,
 	\amp, Pseq([0, 0, 1, 1, 0, 0, 1, 0],   inf) * 0.6,
 	\amp, Pseq([3, 1, 1, 1, 3, 1, 1, 1],   inf) * 1.2,
-
-
-		\amp, ~snaredict.at(	\breakAmp) + (Pbjorklund(3, 8, inf).stutter(1) * 0.3) * 10 ,
-		\amp, ~snaredict.at(	\streightAmp) *3,
-	\filFreq, 1000,
-	\filFreq, Pwhite(200, 900, inf),
+	\amp, ~snaredict.at(	\streightAmp) + (Pbjorklund(3, 8, inf).stutter(1) * 0.3) ,
+	\amp, ~snaredict.at(	\streightAmp),
+	\filFreq, 1400,
+	\filFreq, Pwhite(1400, 1500, inf),
 	\dur, ~snaredict.at(\streightDur),
 	\delSpread, Pwhite(0.2, 2),
 	\delSpread, Pwhite(0.4, 0.5),
