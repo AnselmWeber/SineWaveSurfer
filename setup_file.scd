@@ -176,13 +176,13 @@
 	s.plotTree
 
 };
-s.options.memSize_(65536 * 4);
+s.options.memSize_(65536 * 8);
 
-s.options.protocol = \tcp; // set to use tcp
-s.options.bindAddress = "0.0.0.0"; // allow connections from any address
-s.options.maxLogins = 4; // set to correct number of clients
+//s.options.protocol = \tcp; // set to use tcp
+//s.options.bindAddress = "0.0.0.0"; // allow connections from any address
+//s.options.maxLogins = 4; // set to correct number of clients
 
-s.latency = 1.0;
+s.latency = 0.1;
 
 
 s.waitForBoot {
@@ -191,8 +191,8 @@ s.waitForBoot {
 
 	s.sync;
 
-	~setup.();
-	//ServerTree.add(~setup, s);
+	//~setup.();
+	ServerTree.add(~setup, s);
 
 
 };
@@ -204,6 +204,8 @@ s.waitForBoot {
 
 Synth(\kck)
 
+s.meter(0,2);
+s.scope;
 
 
 

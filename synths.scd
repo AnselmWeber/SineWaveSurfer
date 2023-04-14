@@ -21,7 +21,7 @@ Ndef(\p_out, { |in|
 
 	In.ar(in, 2);
 
-});
+}).quant = 1;
 
 
 
@@ -29,7 +29,8 @@ Ndef(\proto, { |inbus|
 
 	In.ar(inbus, 2);
 
-});
+}).quant = 1;
+
 
 // slot 99 Splay + LeakdDC
 
@@ -264,6 +265,18 @@ SynthDef(\snare, {
     Out.ar(out, Pan2.ar(snd, pan, amp));
 }).add;
 
+SynthDef(\saw, { |in, out, freq = 50, release = 1, amp = 0.5, cut = 5000|
+
+	var snd, env;
+	env = EnvGen.ar(Env([0, 1, 1, 0], [0.001, release, 0.001]), doneAction: 2);
+	snd = Saw.ar(freq * [1, 1.01]) * env;
+	//snd = MoogLadder.ar(snd, cut).tanh * env;
+	snd = BLowCut.ar(snd, 50);
+
+
+	Out.ar(out, snd * amp)
+}).add;
+
 
 SynthDef(\master, { |wetlevel = -0.85, dist = 2|
 
@@ -281,6 +294,7 @@ SynthDef(\master, { |wetlevel = -0.85, dist = 2|
 	wet = HPF.ar(wet, 400);
 
 	snd = XFade2.ar(snd, wet, wetlevel);
+	snd = LeakDC.ar(snd);
 
 	ReplaceOut.ar(0, snd.clip(-1, 1));
 
