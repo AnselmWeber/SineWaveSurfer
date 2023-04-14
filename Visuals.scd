@@ -1,8 +1,5 @@
 
-(
-~rotateBus = Bus.control(s, 1);
-~rotateBus.set(0);
-~rotate = 0.0;
+~beachBuses = {
 
 
 //white out everything
@@ -28,7 +25,10 @@
 ~boardBlackBlackBus.set(0);
 ~boardBlack = 0;
 
-
+//rotate parts
+~rotateBus = Bus.new(\control, 15, 1, s);
+~rotateBus.set(0);
+~rotate = 0.0;
 
 ~spec_seaGreen = ControlSpec(159, 255, \lin, 0.1, 159);
 ~spec_seaRed = ControlSpec(2, 255, \lin, 0.1, 159);
@@ -68,9 +68,9 @@
 ~calcTide = {|int, velocity = 0.5| ((int * velocity / pi).sin + 1) / 2;};
 
 i = 0;
+};
 
-)
-(
+~beachView= {
 var screenDimensionX, screenDimensionY,
 boardPosX = 100, boardPosY = 60, boardWidth = 5, boardHeight = 40, boardMaxWidth = 100,
 sky_sea = 20, surfHeightPerc = 0.3,
@@ -154,7 +154,8 @@ r = Routine({ arg appClockTime;
     w.close;
 });
 AppClock.play(r);
-)
+}
+
 
 
 

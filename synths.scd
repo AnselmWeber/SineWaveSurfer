@@ -163,7 +163,7 @@ SynthDef(\pluck, { |freq = 440, in, out = 0, release = 1.0, amp = 1.0, dist = 2,
 
 }).add;
 
-SynthDef(\chord, { |freq = 440, in, out = 0, release = 1.0, amp = 1.0, dist = 10, pm = 1,gain = 0.5, stroke = 0.25|
+SynthDef(\chord, { |freq = 440, in, out = 0, release = 1.0, amp = 1.0, dist = 7, pm = 1,gain = 0.5, stroke = 0.25|
 
 	var snd, env, trig, chord, muted, envmute, vib, supermuted;
 
@@ -184,7 +184,7 @@ SynthDef(\chord, { |freq = 440, in, out = 0, release = 1.0, amp = 1.0, dist = 10
 	snd = Splay.ar(snd);
 
 
-	snd = (snd * dist).tanh * 0.85;
+	snd = (snd * dist).tanh * 0.7;
 	snd = FreeVerb.ar(snd, 1.0, 0.4, 0.5) * 1.0 + snd;
 
 	muted = MoogFF.ar(snd * 1, freq * 3, 2.5) * 2;
@@ -203,9 +203,9 @@ SynthDef(\chord, { |freq = 440, in, out = 0, release = 1.0, amp = 1.0, dist = 10
 	//snd = DCompressor.ar(snd, 0, 0, 30, -80, 0.001, 100, 0.0) * 0.95;
 	snd = Compander.ar(snd, snd * 1.0, 0.5, 1.0, 0.6, 0.001, 0.1);
 	//snd = CombC.ar(snd, 0.2, 0.2, 2.0) * env;
-	snd = BHiShelf.ar(snd, 1200, 1.0, 16);
+	snd = BHiShelf.ar(snd, 1200, 1.0, 10);
 	snd = BLowCut.ar(snd, 420);
-	snd = snd * env;
+	snd = snd * env * 0.5;
 
 	Out.ar(out, snd * amp);
 

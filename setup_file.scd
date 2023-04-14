@@ -141,71 +141,46 @@
 		~check.(name, addfun);
 	};
 
-
-	// r function wird nicht mehr benötgt
-	// p + f  brauchen wir eigentlich auch nicht mehr oder ?
-
-	/*
-	p = {|name, args|
-
-	var node, id;
-	id = a.at(name) + 1;
-	node = id.asNodeID;
-	args.do({ |item, i|
-
-	if(i % 2 == 0, {
-	s.sendMsg(\n_set, node, item, args[i + 1]);
-	});
-
-	});
-
-	};
-
-	f = {|name|
-
-	var node, id;
-
-	id = a.at(name) + 1;
-
-	node = id.asNodeID;
-
-	s.sendMsg(\n_free, node);
-	};
-	*/
 	~m = Synth(\master, addAction: \addToTail);
 	s.plotTree
 
 };
 s.options.memSize_(65536 * 8);
 
-//s.options.protocol = \tcp; // set to use tcp
-//s.options.bindAddress = "0.0.0.0"; // allow connections from any address
-//s.options.maxLogins = 4; // set to correct number of clients
+s.options.protocol = \tcp; // set to use tcp
+s.options.bindAddress = "0.0.0.0"; // allow connections from any address
+s.options.maxLogins = 4; // set to correct number of clients
 
-s.latency = 0.1;
+s.latency = 1.0;
+n = NetAddr("172.20.10.2", 57120);
+~lb = (\key: 0);
 
 
 s.waitForBoot {
 
 	"synths.scd".loadRelative;
-
+	"Visuals.scd".loadRelative;
 	s.sync;
 
-	//~setup.();
-	ServerTree.add(~setup, s);
+	~setup.();
 
+
+	l = LinkClock(1).latency_(Server.default.latency);
+	l.tempo = 150 / 120;
+	l.play;
+
+
+	//ServerTree.add(~setup, s);
+
+	~beachBuses.();
+	~beachView.();
 
 };
+///Beach-View
 )
 
 ().play;
 
-~m.set(\dist, 2);
-
-Synth(\kck)
-
-s.meter(0,2);
-s.scope;
 
 
 
@@ -215,10 +190,7 @@ s.scope;
 
 
 
-
-
-
-
+NetAd.langPort;
 
 
 
