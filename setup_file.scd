@@ -188,14 +188,24 @@ s.latency = 1.0;
 s.waitForBoot {
 
 	"synths.scd".loadRelative;
-
+	"Visuals.scd".loadRelative;
 	s.sync;
 
 	~setup.();
+
 	//ServerTree.add(~setup, s);
 
+	~beachBuses.();
+	~beachView.();
 
 };
+
+
+///Beach-View
+
+
+
+
 )
 
 ().play;
